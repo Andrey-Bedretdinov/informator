@@ -42,7 +42,7 @@ def add_user(user_id):
 
 def start_parse():
     observer = Observer()
-    observer.schedule(MyHandler(), path='./test', recursive=True)
+    observer.schedule(MyHandler(), path='/volume2/ОПЕРАТОРЫ/', recursive=True)
     observer.start()
 
     try:
