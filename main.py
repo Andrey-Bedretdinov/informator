@@ -19,7 +19,7 @@ class MyHandler(FileSystemEventHandler):
 
     def on_created(self, event):
         # Проверяем, что событие создания файла произошло не более чем 1 секунду назад
-        if not event.is_directory and time.time() - os.path.getctime(event.src_path) < 1:
+        if not event.is_directory and event.on_closed and time.time() - os.path.getctime(event.src_path) < 1:
             asyncio.run(push_message(f"На сервер загружен новый файл: {event.src_path}"))
 
 
