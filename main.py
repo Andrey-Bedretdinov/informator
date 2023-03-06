@@ -8,7 +8,6 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-
 bot_token = "5977162996:AAFioDBPb2wfDjCb3-BDLyXt9PnHzBtH2FE"
 path = '/volume2/ОПЕРАТОРЫ/'
 
@@ -27,7 +26,8 @@ class MyHandler(FileSystemEventHandler):
             asyncio.run(push_message(f"⌛ |  На сервер загружается новый файл:\n{event.src_path[8:]}"))
 
     def on_closed(self, event):
-        if not event.is_directory and event.event_type == 'closed' and time.time() - os.path.getctime(event.src_path) < 1:
+        if not event.is_directory and event.event_type == 'closed' and time.time() - os.path.getctime(
+                event.src_path) < 1:
             asyncio.run(push_message(f"✅ |  На сервер загружен новый файл:\n{event.src_path[8:]}"))
 
 
@@ -43,9 +43,18 @@ def get_user_ids():
     return user_ids
 
 
+def check_user_exists(user_id):
+    with open('users.txt', 'r') as file:
+        for line in file:
+            if str(user_id) == line.strip():
+                return True
+    return False
+
+
 def add_user(user_id):
-    with open('users.txt', 'a') as file:
-        file.write(str(user_id) + '\n')
+    if not check_user_exists(user_id):
+        with open('users.txt', 'a') as file:
+            file.write(str(user_id) + '\n')
 
 
 def start_parse():
