@@ -21,10 +21,10 @@ class MyHandler(FileSystemEventHandler):
     def __init__(self):
         pass
 
-    def on_created(self, event):
-        # Проверяем, что событие создания файла произошло не более чем 1 секунду назад
-        if not event.is_directory and time.time() - os.path.getctime(event.src_path) < 1:
-            asyncio.run(push_message(f"На сервер загружается новый файл: {event.src_path}"))
+    # def on_created(self, event):
+    #     # Проверяем, что событие создания файла произошло не более чем 1 секунду назад
+    #     if not event.is_directory and time.time() - os.path.getctime(event.src_path) < 1:
+    #         asyncio.run(push_message(f"На сервер загружается новый файл: {event.src_path}"))
 
     def on_modified(self, event):
         if not event.is_directory and event.src_path.startswith(path) and time.time() - os.path.getmtime(
