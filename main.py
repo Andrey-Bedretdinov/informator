@@ -8,8 +8,12 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
+
+bot_token = "5977162996:AAFioDBPb2wfDjCb3-BDLyXt9PnHzBtH2FE"
+path = '/volume2/ОПЕРАТОРЫ/'
+
 logging.basicConfig(level=logging.INFO)
-bot = Bot(token="5977162996:AAFioDBPb2wfDjCb3-BDLyXt9PnHzBtH2FE", parse_mode=types.ParseMode.HTML)
+bot = Bot(token=bot_token, parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot)
 
 
@@ -19,7 +23,12 @@ class MyHandler(FileSystemEventHandler):
 
     def on_created(self, event):
         # Проверяем, что событие создания файла произошло не более чем 1 секунду назад
-        if not event.is_directory and event.on_closed and time.time() - os.path.getctime(event.src_path) < 1:
+        if not event.is_directory and time.time() - os.path.getctime(event.src_path) < 1:
+            asyncio.run(push_message(f"На сервер загружается новый файл: {event.src_path}"))
+
+    def on_modified(self, event):
+        if not event.is_directory and event.src_path.startswith(path) and time.time() - os.path.getmtime(
+                event.src_path) > 1:
             asyncio.run(push_message(f"На сервер загружен новый файл: {event.src_path}"))
 
 
@@ -42,7 +51,7 @@ def add_user(user_id):
 
 def start_parse():
     observer = Observer()
-    observer.schedule(MyHandler(), path='/volume2/ОПЕРАТОРЫ/', recursive=True)
+    observer.schedule(MyHandler(), path=path, recursive=True)
     observer.start()
 
     try:
@@ -70,8 +79,6 @@ def start_bot():
 
 
 if __name__ == "__main__":
-    bot_token = "5977162996:AAFioDBPb2wfDjCb3-BDLyXt9PnHzBtH2FE"
-
     parse_proc = Process(target=start_parse)
     parse_proc.start()
     start_bot()
