@@ -24,11 +24,11 @@ class MyHandler(FileSystemEventHandler):
     def on_created(self, event):
         # Проверяем, что событие создания файла произошло не более чем 1 секунду назад
         if not event.is_directory and time.time() - os.path.getctime(event.src_path) < 1:
-            asyncio.run(push_message(f"⌛ |  На сервер загружается новый файл:\n{event.src_path}"))
+            asyncio.run(push_message(f"⌛ |  На сервер загружается новый файл:\n{event.src_path[8:]}"))
 
     def on_closed(self, event):
         if not event.is_directory and event.event_type == 'closed' and time.time() - os.path.getctime(event.src_path) < 1:
-            asyncio.run(push_message(f"✅ |  На сервер загружен новый файл:\n{event.src_path}"))
+            asyncio.run(push_message(f"✅ |  На сервер загружен новый файл:\n{event.src_path[8:]}"))
 
 
 async def push_message(message):
