@@ -28,18 +28,28 @@ class MyHandler(FileSystemEventHandler):
     def on_closed(self, event):
         if not event.is_directory and event.event_type == 'closed' and time.time() - os.path.getctime(
                 event.src_path) < 1:
-            asyncio.run(push_message(f"✅ |  На сервер загружен новый файл:\n{event.src_path[8:]}"))
+            asyncio.run(edit_message(message_path=event.src_path[8:],
+                                     new_message=f"✅ |  На сервер загружен новый файл:\n{event.src_path[8:]}"))
 
 
-async def push_message(message:str):
+async def push_message(message: str):
     user_ids = get_user_ids()
     for user_id in user_ids:
         sent_message = await bot.send_message(int(user_id), message)
         message_id = sent_message.message_id
         message_path = message.split("\n")[-1]
-        data = f'''{message_id}:{message_path}\n'''
+        data = f'''{user_id}:{message_id}:{message_path}\n'''
         with open('files.txt', 'a') as file:
             file.write(data)
+
+
+async def edit_message(message_path: str, new_message: str):
+    with open('files.txt', 'r') as file:
+        for line in file:
+            if line.endswith(f"{message_path}\n"):
+                user_id = int(line.split(':')[0])
+                message_id = int(line.split(':')[1])
+                await bot.edit_message_text(chat_id=user_id, message_id=message_id, text=new_message)
 
 
 def get_user_ids():
