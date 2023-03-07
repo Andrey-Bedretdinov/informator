@@ -44,12 +44,31 @@ async def push_message(message: str):
 
 
 async def edit_message(message_path: str, new_message: str):
-    with open('files.txt', 'r') as file:
+    with open('files.txt', 'r') as file, open('files_temp.txt', 'w') as temp_file:
+        found = False
         for line in file:
             if line.endswith(f"{message_path}\n"):
                 user_id = int(line.split(':')[0])
                 message_id = int(line.split(':')[1])
                 await bot.edit_message_text(chat_id=user_id, message_id=message_id, text=new_message)
+                found = True
+            else:
+                temp_file.write(line)
+
+        if found:
+            os.remove('files.txt')
+            os.rename('files_temp.txt', 'files.txt')
+        else:
+            os.remove('files_temp.txt')
+
+
+# async def edit_message(message_path: str, new_message: str):
+#     with open('files.txt', 'r') as file:
+#         for line in file:
+#             if line.endswith(f"{message_path}\n"):
+#                 user_id = int(line.split(':')[0])
+#                 message_id = int(line.split(':')[1])
+#                 await bot.edit_message_text(chat_id=user_id, message_id=message_id, text=new_message)
 
 
 def get_user_ids():
