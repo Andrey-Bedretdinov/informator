@@ -74,12 +74,12 @@ def start_parse():
 @dp.message_handler(commands=["start"])
 async def cmd_start(message: types.Message):
     add_user(message.from_id)
-    await message.answer("Привет, сюда будут приходить уведомления, когда на сервер загрязят новый файл")
+    await message.answer("Привет, сюда будут приходить уведомления, когда на сервер загрузят новый файл")
 
 
 @dp.message_handler()
 async def echo_message(message: types.Message):
-    await message.answer(f"Вы написали: {message.text}")
+    await message.answer(f"Всё четко, бот работает)")
 
 
 def start_bot():
