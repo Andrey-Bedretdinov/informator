@@ -141,6 +141,7 @@ def start_bot():
 
 
 if __name__ == "__main__":
+    open('files.txt', 'w').close()
     parse_proc = Process(target=start_parse)
     parse_proc.start()
     start_bot()
