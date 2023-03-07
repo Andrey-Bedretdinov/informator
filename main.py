@@ -11,7 +11,7 @@ from aiogram.utils.exceptions import BotBlocked
 
 bot_token = "5977162996:AAFioDBPb2wfDjCb3-BDLyXt9PnHzBtH2FE"
 path = '/volume2/ОПЕРАТОРЫ/'
-password = ''
+password = 'q6C/WV6y'
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=bot_token, parse_mode=types.ParseMode.HTML)
@@ -137,7 +137,8 @@ async def echo_message(message: types.Message):
     if message.text == password:
         add_user(message.from_id)
         await message.answer(f"Успешно ✅")
-    await message.answer(f"Бот запущен")
+    else:
+        await message.answer(f"Бот запущен")
 
 
 def start_bot():
