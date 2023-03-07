@@ -121,6 +121,7 @@ def start_bot():
 
 
 if __name__ == "__main__":
-    parse_proc = Process(target=start_parse)
-    parse_proc.start()
-    start_bot()
+    # parse_proc = Process(target=start_parse)
+    # parse_proc.start()
+    # start_bot()
+    start_parse()
