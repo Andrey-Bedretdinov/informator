@@ -7,6 +7,7 @@ import os
 import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from aiogram.utils.exceptions import BotBlocked
 
 bot_token = "5977162996:AAFioDBPb2wfDjCb3-BDLyXt9PnHzBtH2FE"
 path = '/volume2/ОПЕРАТОРЫ/'
@@ -35,12 +36,16 @@ class MyHandler(FileSystemEventHandler):
 async def push_message(message: str):
     user_ids = get_user_ids()
     for user_id in user_ids:
-        sent_message = await bot.send_message(int(user_id), message)
-        message_id = sent_message.message_id
-        message_path = message.split("\n")[-1]
-        data = f'''{user_id}:{message_id}:{message_path}\n'''
-        with open('files.txt', 'a') as file:
-            file.write(data)
+        try:
+            sent_message = await bot.send_message(int(user_id), message)
+            message_id = sent_message.message_id
+            message_path = message.split("\n")[-1]
+            data = f'''{user_id}:{message_id}:{message_path}\n'''
+            with open('files.txt', 'a') as file:
+                file.write(data)
+        except BotBlocked as e:
+            remove_user(user_id)
+            logging.error(f"Ошибка отправки сообщения пользователю {user_id}: {e}")
 
 
 async def edit_message(message_path: str, new_message: str):
@@ -48,9 +53,13 @@ async def edit_message(message_path: str, new_message: str):
         found = False
         for line in file:
             if line.endswith(f"{message_path}\n"):
-                user_id = int(line.split(':')[0])
-                message_id = int(line.split(':')[1])
-                await bot.edit_message_text(chat_id=user_id, message_id=message_id, text=new_message)
+                try:
+                    user_id = int(line.split(':')[0])
+                    message_id = int(line.split(':')[1])
+                    await bot.edit_message_text(chat_id=user_id, message_id=message_id, text=new_message)
+                except BotBlocked as e:
+                    remove_user(user_id)
+                    logging.error(f"Ошибка отправки сообщения пользователю {user_id}: {e}")
                 found = True
             else:
                 temp_file.write(line)
@@ -91,6 +100,17 @@ def add_user(user_id):
             file.write(str(user_id) + '\n')
 
 
+def remove_user(user_id):
+    # Удаление id пользователя из файла users.txt в случае ошибки отправки сообщения
+    with open('users.txt', 'r') as f:
+        user_ids = [line.strip() for line in f]
+    if str(user_id) in user_ids:
+        user_ids.remove(str(user_id))
+        with open('users.txt', 'w') as f:
+            for id in user_ids:
+                f.write(id + '\n')
+
+
 def start_parse():
     observer = Observer()
     observer.schedule(MyHandler(), path=path, recursive=True)
@@ -121,7 +141,6 @@ def start_bot():
 
 
 if __name__ == "__main__":
-    # parse_proc = Process(target=start_parse)
-    # parse_proc.start()
-    # start_bot()
-    start_parse()
+    parse_proc = Process(target=start_parse)
+    parse_proc.start()
+    start_bot()
