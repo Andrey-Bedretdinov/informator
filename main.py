@@ -31,10 +31,15 @@ class MyHandler(FileSystemEventHandler):
             asyncio.run(push_message(f"✅ |  На сервер загружен новый файл:\n{event.src_path[8:]}"))
 
 
-async def push_message(message):
+async def push_message(message:str):
     user_ids = get_user_ids()
     for user_id in user_ids:
-        await bot.send_message(int(user_id), message)
+        sent_message = await bot.send_message(int(user_id), message)
+        message_id = sent_message.message_id
+        message_path = message.split("\n")[-1]
+        data = f'''{message_id}:{message_path}\n'''
+        with open('files.txt', 'a') as file:
+            file.write(data)
 
 
 def get_user_ids():
