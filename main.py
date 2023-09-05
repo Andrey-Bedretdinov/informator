@@ -9,9 +9,9 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from aiogram.utils.exceptions import BotBlocked
 
-bot_token = "5977162996:AAFioDBPb2wfDjCb3-BDLyXt9PnHzBtH2FE"
-path = '/volume2/ОПЕРАТОРЫ/'
-password = 'q6C/WV6y'
+bot_token = ""  # Токен telegram-бота
+path = ''  # Путь к папке слежения
+password = 'q6C/WV6y'  # Пароль для доступа к боту
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=bot_token, parse_mode=types.ParseMode.HTML)
